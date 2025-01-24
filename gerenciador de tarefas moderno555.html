@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciador de Tarefas 5</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-image: url('https://www.example.com/forest-wallpaper.jpg'); /* Imagem de fundo da floresta */
+      background-size: cover;
+      background-position: center;
+      height: 100vh;
+    }
+
+    h1 {
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+      font-size: 2rem;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.8); /* Fundo branco com transparência */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+    }
+
+    .task-header {
+      text-align: center;
+      font-size: 1.5rem;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      width: calc(100% - 120px);
+      padding: 10px;
+      margin-right: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button.add-task {
+      background-color: #28a745;
+      color: #fff;
+    }
+
+    button.add-task:hover {
+      background-color: #218838;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      margin: 5px 0;
+      background: #f1f1f1;
+      border-radius: 5px;
+    }
+
+    li.completed {
+      text-decoration: line-through;
+      color: gray;
+    }
+
+    .task-controls button {
+      margin-left: 5px;
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    .task-controls button.delete {
+      background-color: #dc3545;
+    }
+
+    .task-controls button:hover {
+      opacity: 0.9;
+    }
+
+    .note {
+      margin-top: 5px;
+      font-size: 0.9em;
+      color: #666;
+    }
+
+    .note input {
+      width: calc(100% - 30px);
+      margin: 5px 0;
+    }
+
+    .photo-container {
+      margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .photo-container img {
+      max-width: 100px;
+      max-height: 100px;
+      border-radius: 5px;
+    }
+
+    .photo-container button {
+      background-color: #007bff;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+    }
+
+    .task-photo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .task-photo button.tick {
+      background-color: #28a745;
+      color: white;
+      padding: 5px;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gerenciador de Tarefas 5</h1>
+  <div class="container">
+    <div class="task-header">
+      Gerenciador de Tarefas
+    </div>
+    <div>
+      <input type="text" id="taskInput" placeholder="Digite uma nova tarefa">
+      <button class="add-task" onclick="addTask()">Adicionar</button>
+    </div>
+    <ul id="taskList"></ul>
+  </div>
+
+  <script>
+    function addTask() {
+      const taskInput = document.getElementById('taskInput');
+      const taskText = taskInput.value.trim();
+
+      if (taskText === '') {
+        alert('Por favor, digite uma tarefa.');
+        return;
+      }
+
+      const taskList = document.getElementById('taskList');
+
+      // Criar o item da lista
+      const li = document.createElement('li');
+
+      // Adicionar o texto da tarefa
+      const taskContent = document.createElement('span');
+      taskContent.textContent = taskText;
+      li.appendChild(taskContent);
+
+      // Criar o contêiner de botões
+      const taskControls = document.createElement('div');
+      taskControls.className = 'task-controls';
+
+      // Botão de marcar/desmarcar como concluído
+      const completeButton = document.createElement('button');
+      completeButton.textContent = 'Concluir';
+      completeButton.onclick = function () {
+        li.classList.toggle('completed');
+        completeButton.textContent = li.classList.contains('completed')
+          ? 'Desmarcar'
+          : 'Concluir';
+      };
+      taskControls.appendChild(completeButton);
+
+      // Botão de adicionar foto
+      const photoButton = document.createElement('button');
+      photoButton.textContent = 'Adicionar Foto';
+      photoButton.onclick = function () {
+        const inputFile = document.createElement('input');
+        inputFile.type = 'file';
+        inputFile.accept = 'image/*';
+        inputFile.capture = 'camera';  // Ativa a câmera para capturar a foto
+        inputFile.onchange = function () {
+          const file = inputFile.files[0];
+          const reader = new FileReader();
+
+          reader.onload = function (e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+
+            const photoContainer = li.querySelector('.photo-container') || document.createElement('div');
+            photoContainer.classList.add('photo-container');
+            photoContainer.appendChild(img);
+
+            // Botão para marcar a foto como concluída
+            const tickButton = document.createElement('button');
+            tickButton.classList.add('tick');
+            tickButton.textContent = '✔';
+            tickButton.onclick = function () {
+              img.classList.toggle('completed');
+              tickButton.style.backgroundColor = img.classList.contains('completed') ? '#28a745' : '#007bff';
+            };
+            photoContainer.appendChild(tickButton);
+            li.appendChild(photoContainer);
+          };
+          reader.readAsDataURL(file);
+        };
+        inputFile.click();
+      };
+      taskControls.appendChild(photoButton);
+
+      // Botão de adicionar observação
+      const noteButton = document.createElement('button');
+      noteButton.textContent = 'Nota';
+      noteButton.onclick = function () {
+        const existingNote = li.querySelector('.note');
+        if (existingNote) {
+          existingNote.remove();
+          noteButton.textContent = 'Nota';
+        } else {
+          const noteInput = document.createElement('input');
+          noteInput.type = 'text';
+          noteInput.placeholder = 'Adicione uma observação...';
+          noteInput.className = 'note';
+
+          const noteDiv = document.createElement('div');
+          noteDiv.appendChild(noteInput);
+          li.appendChild(noteDiv);
+
+          noteButton.textContent = 'Remover Nota';
+        }
+      };
+      taskControls.appendChild(noteButton);
+
+      // Botão de excluir tarefa
+      const deleteButton = document.createElement('button');
+      deleteButton.textContent = 'Excluir';
+      deleteButton.className = 'delete';
+      deleteButton.onclick = function () {
+        taskList.removeChild(li);
+      };
+      taskControls.appendChild(deleteButton);
+
+      // Adicionar os controles à tarefa
+      li.appendChild(taskControls);
+
+      // Adicionar o item à lista
+      taskList.appendChild(li);
+
+      // Limpar o campo de texto
+      taskInput.value = '';
+    }
+  </script>
+</body>
+</html>
